@@ -20,13 +20,21 @@ class ConversationEngineController extends BaseController {
     String requestBody = request.reader.text
     Utils.ensureRequestBodyExists(requestBody)
     def input = Utils.getMapFromString(requestBody) as Map
-    logAPI "creatUser", (Utils.getSubObjectAsMap(input, ['loginname', 'name'])) as JSON
-    def result = conversationEngineService.createUser(input, grailsApplication)
+    logAPI "createUser", (Utils.getSubObjectAsMap(input, ['loginname', 'name'])) as JSON
+    def result = conversationEngineService.createUser(input, grailsApplication, request)
     render([sessionId: result.session.id, name: result.user.name] as JSON)
   }
 
   def createSession() {
-    render(conversationEngineService.createSession() as JSON)
+    String requestBody = request.reader.text
+    Utils.ensureRequestBodyExists(requestBody)
+    def input = Utils.getMapFromString(requestBody) as Map
+    logAPI "createSession", (Utils.getSubObjectAsMap(input, ['loginname'])) as JSON
+    def result = conversationEngineService.createSession(input, grailsApplication, request)
+    if (result.keySet().contains('session')) {
+      render([sessionId: result.session.id, name: result.session.user.name] as JSON)
+    } else
+      render Utils.removeEmptyKeys(apiResult) as JSON
   }
 
   def deleteSession() {

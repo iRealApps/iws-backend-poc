@@ -35,11 +35,27 @@ class ApiSpec extends Specification {
     Map response = result.response as Map
 
     then:
-    response == []
     status == Utils.httpStatus.success
+    response.sessionId != null
+    response.name == "Manoj Kumar"
   }
 
-  // TODO: Test validations
+  // TODO: Validations
 
+  void 'User can create a session'() {
+    when:
+    def result = Utils.restCall("${baseUrl}/session",
+        Utils.httpMethod.post, [
+        loginname: 'manoj@iriplco.com',
+        password : 'Pwd1234#'
+    ])
+    int status = result.status
+    Map response = result.response as Map
+
+    then:
+    status == Utils.httpStatus.success
+    response.sessionId != null
+    response.name == "Manoj Kumar"
+  }
 
 }
