@@ -5,14 +5,10 @@ import spock.lang.Specification
 
 class UserSpec extends Specification implements DomainUnitTest<User> {
 
-    def setup() {
-    }
+  def setup() {
+  }
 
-    def cleanup() {
-    }
+  def cleanup() {
+  }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

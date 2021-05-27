@@ -5,14 +5,10 @@ import spock.lang.Specification
 
 class SessionSpec extends Specification implements DomainUnitTest<Session> {
 
-    def setup() {
-    }
+  def setup() {
+  }
 
-    def cleanup() {
-    }
+  def cleanup() {
+  }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

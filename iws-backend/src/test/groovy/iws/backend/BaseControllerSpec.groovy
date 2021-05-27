@@ -3,8 +3,7 @@ package iws.backend
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
-class ConversationEngineControllerSpec extends Specification implements
-    ControllerUnitTest<ConversationEngineController> {
+class BaseControllerSpec extends Specification implements ControllerUnitTest<BaseController> {
 
   def setup() {
   }

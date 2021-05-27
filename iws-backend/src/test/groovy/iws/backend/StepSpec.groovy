@@ -5,14 +5,10 @@ import spock.lang.Specification
 
 class StepSpec extends Specification implements DomainUnitTest<Step> {
 
-    def setup() {
-    }
+  def setup() {
+  }
 
-    def cleanup() {
-    }
+  def cleanup() {
+  }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

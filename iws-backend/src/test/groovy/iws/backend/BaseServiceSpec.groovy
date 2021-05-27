@@ -3,7 +3,7 @@ package iws.backend
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-class ConversationEngineServiceSpec extends Specification implements ServiceUnitTest<ConversationEngineService> {
+class BaseServiceSpec extends Specification implements ServiceUnitTest<BaseService> {
 
   def setup() {
   }
