@@ -1,6 +1,7 @@
 package iws.backend
 
 import grails.gorm.transactions.Transactional
+import groovy.json.JsonSlurper
 
 class ConversationEngineService extends BaseService {
 
@@ -99,12 +100,74 @@ class ConversationEngineService extends BaseService {
         step.errors.allErrors.join('|'))
   }
 
-  Map getStep() {
-    throwAppException('Not implemented')
+  @Transactional
+  Flow createDefaultFlow(User user) {
+    Flow flow = new Flow([
+        user     : user,
+        step     : Step.find { isDefault == true },
+        prev     : null,
+        next     : null,
+        createdAt: Utils.getNow(),
+        details  : null
+    ])
+    if (flow.validate()) {
+      flow.save(flush: true)
+      return flow
+    } else throwAppException('Could not create flow', 'error',
+        flow.errors.allErrors.join('|'))
   }
 
-  Map putStep() {
-    throwAppException('Not implemented')
+  @Transactional
+  Flow createNewFlow(User user, Step step, Flow prev, String details) {
+    Flow flow = new Flow([
+        user     : user,
+        step     : step,
+        prev     : prev,
+        next     : null,
+        createdAt: Utils.getNow(),
+        details  : details
+    ])
+    if (flow.validate()) {
+      flow.save(flush: true)
+      return flow
+    } else throwAppException('Could not create flow', 'error',
+        flow.errors.allErrors.join('|'))
+  }
+
+  Step findNextStep(User user, Step currentStep, String input) {
+    // TODO: Implement the logic engine
+    String targetStepName = (new JsonSlurper().parseText(currentStep.action)).target
+    return Step.find { name == targetStepName }
+  }
+
+  Flow getUserActiveFlow(User user) {
+    return Flow.find { user == user && next == null }
+  }
+
+  Step getUserStep(String sessionId) {
+    Session session = getActiveSession(sessionId)
+    User me = session.user
+    Flow flow = getUserActiveFlow(me)
+    if (!flow) {
+      flow = createDefaultFlow(me)
+    }
+    return flow.step
+  }
+
+  @Transactional
+  Step putUserStep(String sessionId, Map input) {
+    Session session = getActiveSession(sessionId)
+    User me = session.user
+    Flow flow = getUserActiveFlow(me)
+    if (!flow) throwAppException('Could not find current flow', 'error')
+    flow.details = input.details
+    Flow newFlow = createNewFlow(me, findNextStep(me, flow.step, input.input), flow, input.input)
+    flow.next = newFlow
+    if (flow.validate()) {
+      flow.save(flush: true)
+      return newFlow.step
+    } else throwAppException('Could not update flow', 'error',
+        flow.errors.allErrors.join('|'))
   }
 
 }

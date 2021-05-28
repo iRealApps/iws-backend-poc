@@ -1,15 +1,16 @@
 package iws.backend
 
 import grails.testing.mixin.integration.Integration
-import grails.gorm.transactions.Rollback
 import spock.lang.Specification
 import grails.testing.spock.OnceBefore
 import spock.lang.Shared
 import iws.backend.Utils
 import grails.core.GrailsApplication
+import spock.lang.Stepwise
+import grails.gorm.transactions.Transactional
 
 @Integration
-@Rollback
+@Stepwise
 class ApiSpec extends Specification {
 
   GrailsApplication grailsApplication
@@ -17,6 +18,9 @@ class ApiSpec extends Specification {
 
   @Shared
   String baseUrl
+
+  @Shared
+  Step defaultStep
 
   @Shared
   String sessionId
@@ -32,7 +36,7 @@ class ApiSpec extends Specification {
   def cleanup() {
   }
 
-  void 'New user can be created'() {
+  void '1. New user can be created'() {
     when:
     def result = Utils.restCall("${baseUrl}/user",
         Utils.httpMethod.post,
@@ -52,7 +56,7 @@ class ApiSpec extends Specification {
 
   // TODO: Validations
 
-  void 'User can create a session'() {
+  void '2. User can create a session'() {
     when:
     def result = Utils.restCall("${baseUrl}/session",
         Utils.httpMethod.post,
@@ -70,7 +74,7 @@ class ApiSpec extends Specification {
     response.name == "Manoj Kumar"
   }
 
-  void 'User can delete an existing session'() {
+  void '3. User can delete an existing session'() {
     when:
     def result = Utils.restCall("${baseUrl}/session",
         Utils.httpMethod.delete,
@@ -83,7 +87,7 @@ class ApiSpec extends Specification {
     result.status == Utils.httpStatus.success
   }
 
-  void 'Guest session can be created'() {
+  void '4. Guest session can be created'() {
     when:
     String guestName = grailsApplication.config.getProperty('grails.guest-name')
     def result = Utils.restCall("${baseUrl}/session",
@@ -101,48 +105,73 @@ class ApiSpec extends Specification {
     response.name == guestName
   }
 
-  void 'Step can be created'() {
+  void '5. Step can be created'() {
     when:
     def stepData = [
         isDefault: true,
-        name     : 'greet',
+        name     : 'begin',
         details  : '{"message": "Hello"}',
         action   : '{"type":"goto", "target": "end"}'
     ]
-    Step step = conversationEngineService.createStep(stepData)
+    defaultStep = conversationEngineService.createStep(stepData)
 
     then:
-    step != null
-    step.isDefault == stepData.isDefault
-    step.name == stepData.name
-    step.details == stepData.details
-    step.action == stepData.action
+    defaultStep != null
+    defaultStep.isDefault == stepData.isDefault
+    defaultStep.name == stepData.name
+    defaultStep.details == stepData.details
+    defaultStep.action == stepData.action
   }
 
-  //  void 'Current step can be fetched'() {
-  //    when:
-  //    def result = Utils.restCall("${baseUrl}/step",
-  //        Utils.httpMethod.get,
-  //        [:],
-  //        ['Authorization': "Basic ${sessionId}"]
-  //    )
-  //    Map response = result.response as Map
-  //
-  //    then:
-  //    result.status == Utils.httpStatus.success
-  //  }
-  //
-  //  void 'Current step can be completed'() {
-  //    when:
-  //    def result = Utils.restCall("${baseUrl}/step",
-  //        Utils.httpMethod.put,
-  //        [:],
-  //        ['Authorization': "Basic ${sessionId}"]
-  //    )
-  //    Map response = result.response as Map
-  //
-  //    then:
-  //    result.status == Utils.httpStatus.success
-  //  }
+  void '6. Default user step should be fetched'() {
+    when:
+    def result = Utils.restCall("${baseUrl}/user/step",
+        Utils.httpMethod.get,
+        [:],
+        ['Authorization': "Basic ${sessionId}"]
+    )
+    Map response = result.response as Map
+
+    then:
+    result.status == Utils.httpStatus.success
+    response.step.name == defaultStep.name
+    response.step.details == defaultStep.details
+  }
+
+  void '7. Should be able to move to next step'() {
+    when:
+    def stepData = [
+        isDefault: false,
+        name     : 'end',
+        details  : '{"message": "Bye"}',
+        action   : '{}'
+    ]
+    defaultStep = conversationEngineService.createStep(stepData)
+    def result = Utils.restCall("${baseUrl}/user/step",
+        Utils.httpMethod.put,
+        [input: '{}'],
+        ['Authorization': "Basic ${sessionId}"]
+    )
+    Map response = result.response as Map
+
+    then:
+    result.status == Utils.httpStatus.success
+    response.step.name == stepData.name
+    response.step.details == stepData.details
+  }
+
+  void '8. After moving to next step, new step should be fetched'() {
+    when:
+    def result = Utils.restCall("${baseUrl}/user/step",
+        Utils.httpMethod.get,
+        [:],
+        ['Authorization': "Basic ${sessionId}"]
+    )
+    Map response = result.response as Map
+
+    then:
+    result.status == Utils.httpStatus.success
+    response.step.name == 'end'
+  }
 
 }
