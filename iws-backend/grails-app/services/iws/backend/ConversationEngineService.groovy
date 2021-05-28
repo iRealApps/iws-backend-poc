@@ -25,7 +25,7 @@ class ConversationEngineService extends BaseService {
     if (user.validate()) {
       user.save(flush: true)
       return [user: user, session: createSessionObject(user, request)]
-    } else throwAppException(AppException.type.invalidInput, 'validation',
+    } else throwAppException('Invalid input', 'validation',
         user.errors.allErrors.join('|'))
   }
 
@@ -57,7 +57,8 @@ class ConversationEngineService extends BaseService {
       newSession.save(flush: true)
       return newSession
     } else {
-      throwAppException(AppException.type.invalidInput, 'validation', newSession.errors.allErrors.join('|'))
+      throwAppException('Invalid input', 'validation',
+          newSession.errors.allErrors.join('|'))
     }
   }
 
@@ -86,6 +87,16 @@ class ConversationEngineService extends BaseService {
   def void deleteSession(String sessionId) {
     Session session = getActiveSession(sessionId)
     closeSession(session)
+  }
+
+  @Transactional
+  def createStep(Map input) {
+    Step step = new Step(input)
+    if (step.validate()) {
+      step.save(flush: true)
+      return step
+    } else throwAppException('Invalid input', 'validation',
+        step.errors.allErrors.join('|'))
   }
 
   Map getStep() {

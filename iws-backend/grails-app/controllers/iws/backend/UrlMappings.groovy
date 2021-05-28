@@ -13,8 +13,8 @@ class UrlMappings {
     post "/api/user"(controller: 'conversationEngine', action: 'createUser')
     post "/api/session"(controller: 'conversationEngine', action: 'createSession')
     delete "/api/session"(controller: 'conversationEngine', action: 'deleteSession')
-    get "/api/step"(controller: 'conversationEngine', action: 'getStep')
-    put "/api/step"(controller: 'conversationEngine', action: 'putStep')
+    get "/api/user/step"(controller: 'conversationEngine', action: 'getUserStep')
+    put "/api/user/step"(controller: 'conversationEngine', action: 'putUserStep')
 
     "/"(controller: 'application', action: 'index')
     "500"(view: '/error')

@@ -13,6 +13,7 @@ import grails.core.GrailsApplication
 class ApiSpec extends Specification {
 
   GrailsApplication grailsApplication
+  ConversationEngineService conversationEngineService
 
   @Shared
   String baseUrl
@@ -100,30 +101,48 @@ class ApiSpec extends Specification {
     response.name == guestName
   }
 
-  void 'Current step can be fetched'() {
+  void 'Step can be created'() {
     when:
-    def result = Utils.restCall("${baseUrl}/step",
-        Utils.httpMethod.get,
-        [:],
-        ['Authorization': "Basic ${sessionId}"]
-    )
-    Map response = result.response as Map
+    def stepData = [
+        isDefault: true,
+        name     : 'greet',
+        details  : '{"message": "Hello"}',
+        action   : '{"type":"goto", "target": "end"}'
+    ]
+    Step step = conversationEngineService.createStep(stepData)
 
     then:
-    result.status == Utils.httpStatus.success
+    step != null
+    step.isDefault == stepData.isDefault
+    step.name == stepData.name
+    step.details == stepData.details
+    step.action == stepData.action
   }
 
-  void 'Current step can be completed'() {
-    when:
-    def result = Utils.restCall("${baseUrl}/step",
-        Utils.httpMethod.put,
-        [:],
-        ['Authorization': "Basic ${sessionId}"]
-    )
-    Map response = result.response as Map
-
-    then:
-    result.status == Utils.httpStatus.success
-  }
+  //  void 'Current step can be fetched'() {
+  //    when:
+  //    def result = Utils.restCall("${baseUrl}/step",
+  //        Utils.httpMethod.get,
+  //        [:],
+  //        ['Authorization': "Basic ${sessionId}"]
+  //    )
+  //    Map response = result.response as Map
+  //
+  //    then:
+  //    result.status == Utils.httpStatus.success
+  //  }
+  //
+  //  void 'Current step can be completed'() {
+  //    when:
+  //    def result = Utils.restCall("${baseUrl}/step",
+  //        Utils.httpMethod.put,
+  //        [:],
+  //        ['Authorization': "Basic ${sessionId}"]
+  //    )
+  //    Map response = result.response as Map
+  //
+  //    then:
+  //    result.status == Utils.httpStatus.success
+  //  }
 
 }
