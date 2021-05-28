@@ -9,9 +9,11 @@ class ConversationEngineService extends BaseService {
     if (input.password) {
       if (!Utils.isPasswordStrong(input.password)) {
         throwAppException('Weak password', 'validation',
-            "Please Enter Valid Password")
+            "Please enter valid password")
       }
     }
+    if (loginname.trim() == '') throwAppException('Invalid loginname', 'validation',
+        "Please enter valid loginname")
     User existingUser = User.find {
       loginname == Utils.toLowerCase(input.loginname)
     }
