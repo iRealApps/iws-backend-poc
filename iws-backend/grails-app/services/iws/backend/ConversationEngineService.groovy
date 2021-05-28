@@ -41,7 +41,6 @@ class ConversationEngineService extends BaseService {
     if (!user) throwLoginException()
     if (!Utils.isValidEncryptedString(password, user.password))
       throwLoginException()
-
     return [session: createSessionObject(user, request)]
   }
 

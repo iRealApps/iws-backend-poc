@@ -6,10 +6,14 @@ import spock.lang.Specification
 import grails.testing.spock.OnceBefore
 import spock.lang.Shared
 import iws.backend.Utils
+import grails.core.GrailsApplication
 
 @Integration
 @Rollback
 class ApiSpec extends Specification {
+
+  GrailsApplication grailsApplication
+
   @Shared
   String baseUrl
 
@@ -76,6 +80,24 @@ class ApiSpec extends Specification {
 
     then:
     result.status == Utils.httpStatus.success
+  }
+
+  void 'Guest session can be created'() {
+    when:
+    String guestName = grailsApplication.config.getProperty('grails.guest-name')
+    def result = Utils.restCall("${baseUrl}/session",
+        Utils.httpMethod.post,
+        [
+            loginname: 'guest'
+        ]
+    )
+    Map response = result.response as Map
+    sessionId = response.sessionId
+
+    then:
+    result.status == Utils.httpStatus.success
+    response.sessionId != null
+    response.name == guestName
   }
 
   void 'Current step can be fetched'() {

@@ -30,6 +30,10 @@ class ConversationEngineController extends BaseController {
     Utils.ensureRequestBodyExists(requestBody)
     def input = Utils.getMapFromString(requestBody) as Map
     logAPI "createSession", (Utils.getSubObjectAsMap(input, ['loginname'])) as JSON
+    if (input.loginname == 'guest') {
+      input.loginname = grailsApplication.config.getProperty('grails.guest-loginname')
+      input.password = grailsApplication.config.getProperty('grails.guest-password')
+    }
     def result = conversationEngineService.createSession(input, grailsApplication, request)
     if (result.keySet().contains('session')) {
       render([sessionId: result.session.id, name: result.session.user.name] as JSON)
