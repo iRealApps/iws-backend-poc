@@ -78,4 +78,30 @@ class ApiSpec extends Specification {
     result.status == Utils.httpStatus.success
   }
 
+  void 'Current step can be fetched'() {
+    when:
+    def result = Utils.restCall("${baseUrl}/step",
+        Utils.httpMethod.get,
+        [:],
+        ['Authorization': "Basic ${sessionId}"]
+    )
+    Map response = result.response as Map
+
+    then:
+    result.status == Utils.httpStatus.success
+  }
+
+  void 'Current step can be completed'() {
+    when:
+    def result = Utils.restCall("${baseUrl}/step",
+        Utils.httpMethod.put,
+        [:],
+        ['Authorization': "Basic ${sessionId}"]
+    )
+    Map response = result.response as Map
+
+    then:
+    result.status == Utils.httpStatus.success
+  }
+
 }

@@ -90,11 +90,11 @@ class ConversationEngineService extends BaseService {
   }
 
   Map getStep() {
-    return [:]
+    throwAppException('Not implemented')
   }
 
   Map putStep() {
-    return [:]
+    throwAppException('Not implemented')
   }
 
 }
