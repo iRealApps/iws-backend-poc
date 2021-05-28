@@ -38,7 +38,10 @@ class ConversationEngineController extends BaseController {
   }
 
   def deleteSession() {
-    render(conversationEngineService.deleteSession() as JSON)
+    String sessionId = getSessionId(request)
+    logAPI "deleteSession", sessionId
+    conversationEngineService.deleteSession(sessionId)
+    render [:] as JSON
   }
 
   def getStep() {

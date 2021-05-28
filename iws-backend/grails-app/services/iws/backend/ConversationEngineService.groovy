@@ -12,8 +12,8 @@ class ConversationEngineService extends BaseService {
             "Please enter valid password")
       }
     }
-    if (loginname.trim() == '') throwAppException('Invalid loginname', 'validation',
-        "Please enter valid loginname")
+    if (input.loginname.trim() == '')
+      throwAppException('Invalid loginname', 'validation', "Please enter valid loginname")
     User existingUser = User.find {
       loginname == Utils.toLowerCase(input.loginname)
     }
@@ -62,8 +62,31 @@ class ConversationEngineService extends BaseService {
     }
   }
 
-  Map deleteSession() {
-    return [:]
+  private void throwInvalidSessionException() {
+    throw new AuthException("Invalid session")
+  }
+
+  public Session getActiveSession(String sessionId) {
+    Session session = Session.get(sessionId)
+    if (!session)
+      throwInvalidSessionException()
+    if (session.state != Session.ObjectState.active)
+      throwInvalidSessionException()
+    return session
+  }
+
+  @Transactional
+  private void closeSession(Session session) {
+    session.closedAt = Utils.getNow()
+    session.lastActivityAt = session.closedAt
+    session.state = Session.ObjectState.closed
+    session.save(flush: true)
+  }
+
+  @Transactional
+  def void deleteSession(String sessionId) {
+    Session session = getActiveSession(sessionId)
+    closeSession(session)
   }
 
   Map getStep() {

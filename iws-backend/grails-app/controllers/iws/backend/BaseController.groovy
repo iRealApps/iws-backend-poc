@@ -69,7 +69,7 @@ class BaseController extends RestfulController {
   def onException(Exception unknownException) {
     response.setStatus(500)
     AppException ex = new AppException(
-        'Internal Error',
+        Utils.isTestEnvironment() ? unknownException.message : 'Internal Error',
         'unknown',
         unknownException.message
     )

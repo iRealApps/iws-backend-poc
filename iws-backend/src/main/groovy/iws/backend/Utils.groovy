@@ -14,7 +14,6 @@ import java.time.temporal.ChronoUnit
 import java.util.regex.*
 import java.net.http.*
 import org.imgscalr.Scalr
-import java.time.Duration
 import org.apache.commons.codec.binary.Base64;
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec

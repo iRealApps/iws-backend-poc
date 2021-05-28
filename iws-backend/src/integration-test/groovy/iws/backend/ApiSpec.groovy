@@ -5,12 +5,16 @@ import grails.gorm.transactions.Rollback
 import spock.lang.Specification
 import grails.testing.spock.OnceBefore
 import spock.lang.Shared
+import iws.backend.Utils
 
 @Integration
 @Rollback
 class ApiSpec extends Specification {
   @Shared
   String baseUrl
+
+  @Shared
+  String sessionId
 
   @OnceBefore
   void init() {
@@ -26,16 +30,17 @@ class ApiSpec extends Specification {
   void 'New user can be created'() {
     when:
     def result = Utils.restCall("${baseUrl}/user",
-        Utils.httpMethod.post, [
-        loginname: 'manoj@iriplco.com',
-        password : 'Pwd1234#',
-        name     : 'Manoj Kumar'
-    ])
-    int status = result.status
+        Utils.httpMethod.post,
+        [
+            loginname: 'manoj@iriplco.com',
+            password : 'Pwd1234#',
+            name     : 'Manoj Kumar'
+        ]
+    )
     Map response = result.response as Map
 
     then:
-    status == Utils.httpStatus.success
+    result.status == Utils.httpStatus.success
     response.sessionId != null
     response.name == "Manoj Kumar"
   }
@@ -45,17 +50,32 @@ class ApiSpec extends Specification {
   void 'User can create a session'() {
     when:
     def result = Utils.restCall("${baseUrl}/session",
-        Utils.httpMethod.post, [
-        loginname: 'manoj@iriplco.com',
-        password : 'Pwd1234#'
-    ])
-    int status = result.status
+        Utils.httpMethod.post,
+        [
+            loginname: 'manoj@iriplco.com',
+            password : 'Pwd1234#'
+        ]
+    )
+    Map response = result.response as Map
+    sessionId = response.sessionId
+
+    then:
+    result.status == Utils.httpStatus.success
+    response.sessionId != null
+    response.name == "Manoj Kumar"
+  }
+
+  void 'User can delete an existing session'() {
+    when:
+    def result = Utils.restCall("${baseUrl}/session",
+        Utils.httpMethod.delete,
+        [:],
+        ['Authorization': "Basic ${sessionId}"]
+    )
     Map response = result.response as Map
 
     then:
-    status == Utils.httpStatus.success
-    response.sessionId != null
-    response.name == "Manoj Kumar"
+    result.status == Utils.httpStatus.success
   }
 
 }
