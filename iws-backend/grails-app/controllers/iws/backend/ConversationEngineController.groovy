@@ -5,6 +5,7 @@ import grails.converters.*
 import iws.backend.*
 import iws.backend.User
 import grails.core.GrailsApplication
+import groovy.json.JsonSlurper
 
 class ConversationEngineController extends BaseController {
   static responseFormats = ['json']
@@ -48,12 +49,19 @@ class ConversationEngineController extends BaseController {
     render [:] as JSON
   }
 
+  Map getStepAsMap(Step step) {
+    return [
+      name: step.name,
+      details: new JsonSlurper().parseText(step.details)
+    ]
+  }
+
   def getUserStep() {
     String sessionId = getSessionId(request)
     logAPI "getUserStep", sessionId
     Map result = conversationEngineService.getUserStep(sessionId)
     render([
-        step   : (Utils.getSubObjectAsMap(result.step, ['name', 'details'])),
+        step   : getStepAsMap(result.step),
         context: [name: result.user.name]
     ] as JSON)
   }
@@ -66,7 +74,7 @@ class ConversationEngineController extends BaseController {
     logAPI "putUserStep", sessionId
     Map result = conversationEngineService.putUserStep(sessionId, input)
     render([
-        step   : (Utils.getSubObjectAsMap(result.step, ['name', 'details'])),
+        step   : getStepAsMap(result.step),
         context: [name: result.user.name]
     ] as JSON)
   }

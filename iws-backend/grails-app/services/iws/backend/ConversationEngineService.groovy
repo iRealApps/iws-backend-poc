@@ -134,8 +134,9 @@ class ConversationEngineService extends BaseService {
         flow.errors.allErrors.join('|'))
   }
 
-  Step findNextStep(User user, Step currentStep, String input) {
+  Step findNextStep(User user, Step currentStep, def input) {
     // TODO: Implement the logic engine
+    println ">>> ${currentStep.name}, ${currentStep.action}"
     String targetStepName = (new JsonSlurper().parseText(currentStep.action)).target
     return Step.find { name == targetStepName }
   }

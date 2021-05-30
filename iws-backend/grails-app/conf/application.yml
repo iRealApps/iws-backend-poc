@@ -1,5 +1,7 @@
 ---
 grails:
+  cors:
+    enabled: true
   guest-loginname: guest@iriplco.com
   guest-password: dummyPassword#1234
   guest-name: Guest
@@ -13,9 +15,9 @@ grails:
       events: false
 info:
   app:
-    name: '@info.app.name@'
-    version: '@info.app.version@'
-    grailsVersion: '@info.app.grailsVersion@'
+    name: "@info.app.name@"
+    version: "@info.app.version@"
+    grailsVersion: "@info.app.grailsVersion@"
 spring:
   jmx:
     unique-names: true
@@ -27,12 +29,12 @@ spring:
   devtools:
     restart:
       additional-exclude:
-        - '*.gsp'
-        - '**/*.gsp'
-        - '*.gson'
-        - '**/*.gson'
-        - 'logback.groovy'
-        - '*.properties'
+        - "*.gsp"
+        - "**/*.gsp"
+        - "*.gson"
+        - "**/*.gson"
+        - "logback.groovy"
+        - "*.properties"
 management:
   endpoints:
     enabled-by-default: false
@@ -64,7 +66,7 @@ grails:
       js: text/javascript
       rss: application/rss+xml
       text: text/plain
-      all: '*/*'
+      all: "*/*"
   urlmapping:
     cache:
       maxsize: 1000
@@ -72,7 +74,6 @@ grails:
     defaultScope: singleton
   converters:
     encoding: UTF-8
-
 ---
 hibernate:
   cache:
@@ -84,7 +85,7 @@ dataSource:
   jmxExport: true
   driverClassName: org.h2.Driver
   username: sa
-  password: ''
+  password: ""
 
 environments:
   development:

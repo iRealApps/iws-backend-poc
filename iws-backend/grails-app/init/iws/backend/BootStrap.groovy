@@ -47,7 +47,7 @@ class BootStrap {
             ],
             action   : [
                 type  : "goto",
-                target: "greet",
+                target: "getInterest",
             ],
         ],
         getInterest       : [
