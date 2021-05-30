@@ -212,7 +212,7 @@ class BootStrap {
       }
     }
     Step.findAll().each {
-      println "END BootStrap.populateDataSet() <- ${it.name}"
+      println "BootStrap.populateDataSet() <- ${it.name}"
     }
     println "END BootStrap.populateDataSet()"
   }
