@@ -51,8 +51,11 @@ class ConversationEngineController extends BaseController {
   def getUserStep() {
     String sessionId = getSessionId(request)
     logAPI "getUserStep", sessionId
-    Step step = conversationEngineService.getUserStep(sessionId)
-    render([step: (Utils.getSubObjectAsMap(step, ['name', 'details']))] as JSON)
+    Map result = conversationEngineService.getUserStep(sessionId)
+    render([
+        step   : (Utils.getSubObjectAsMap(result.step, ['name', 'details'])),
+        context: [name: result.user.name]
+    ] as JSON)
   }
 
   def putUserStep() {
@@ -61,8 +64,11 @@ class ConversationEngineController extends BaseController {
     Utils.ensureRequestBodyExists(requestBody)
     def input = Utils.getMapFromString(requestBody) as Map
     logAPI "putUserStep", sessionId
-    Step step = conversationEngineService.putUserStep(sessionId, input)
-    render([step: (Utils.getSubObjectAsMap(step, ['name', 'details']))] as JSON)
+    Map result = conversationEngineService.putUserStep(sessionId, input)
+    render([
+        step   : (Utils.getSubObjectAsMap(result.step, ['name', 'details'])),
+        context: [name: result.user.name]
+    ] as JSON)
   }
 
 }

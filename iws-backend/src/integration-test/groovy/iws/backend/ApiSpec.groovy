@@ -136,6 +136,7 @@ class ApiSpec extends Specification {
     result.status == Utils.httpStatus.success
     response.step.name == defaultStep.name
     response.step.details == defaultStep.details
+    response.context.name == 'Guest'
   }
 
   void '7. Should be able to move to next step'() {
@@ -158,6 +159,7 @@ class ApiSpec extends Specification {
     result.status == Utils.httpStatus.success
     response.step.name == stepData.name
     response.step.details == stepData.details
+    response.context.name == 'Guest'
   }
 
   void '8. After moving to next step, new step should be fetched'() {
@@ -172,6 +174,7 @@ class ApiSpec extends Specification {
     then:
     result.status == Utils.httpStatus.success
     response.step.name == 'end'
+    response.context.name == 'Guest'
   }
 
 }

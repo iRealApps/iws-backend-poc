@@ -14,7 +14,7 @@ class Step {
   }
 
   static constraints = {
-    isDefault unique: true, blank: false, nullable: false
+    isDefault unique: false, blank: false, nullable: false
     name unique: true, blank: true, nullable: true
     details unique: false, blank: true, nullable: true, sqlType: 'text'
     action unique: false, blank: true, nullable: true, sqlType: 'text'

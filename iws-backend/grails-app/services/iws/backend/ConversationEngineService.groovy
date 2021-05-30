@@ -144,28 +144,33 @@ class ConversationEngineService extends BaseService {
     return Flow.find { user == user && next == null }
   }
 
-  Step getUserStep(String sessionId) {
+  Map getUserStep(String sessionId) {
     Session session = getActiveSession(sessionId)
     User me = session.user
     Flow flow = getUserActiveFlow(me)
     if (!flow) {
       flow = createDefaultFlow(me)
     }
-    return flow.step
+    return [step: flow.step, user: me, session: session]
   }
 
   @Transactional
-  Step putUserStep(String sessionId, Map input) {
+  Map putUserStep(String sessionId, Map input) {
     Session session = getActiveSession(sessionId)
     User me = session.user
     Flow flow = getUserActiveFlow(me)
     if (!flow) throwAppException('Could not find current flow', 'error')
     flow.details = input.details
-    Flow newFlow = createNewFlow(me, findNextStep(me, flow.step, input.input), flow, input.input)
+    Flow newFlow = createNewFlow(
+        me,
+        findNextStep(me, flow.step, input.input),
+        flow,
+        input.input
+    )
     flow.next = newFlow
     if (flow.validate()) {
       flow.save(flush: true)
-      return newFlow.step
+      return [step: newFlow.step, user: me, session: session]
     } else throwAppException('Could not update flow', 'error',
         flow.errors.allErrors.join('|'))
   }
